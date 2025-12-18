@@ -1,0 +1,212 @@
+Hello World!
+Socket created
+Bound to 0.0.0.0:8080...
+Socket file descriptor:  3
+Done calling kevent!
+KQueue ID:  4
+Event returned..
+1  events returned
+Ident:  3
+New connection -  1  added!
+KQueue ID:  4
+Event returned..
+1  events returned
+Ident:  5
+READ!
+Read event on id:  5
+toWriteMap: 
+map[5:abc
+]
+
+Read:  abc
+ 
+
+KQueue ID:  4
+Event returned..
+1  events returned
+Ident:  5
+WRITE!
+map[5:abc
+]
+Writing to  5 abc
+
+Wrote  4  bytes..
+KQueue ID:  4
+Event returned..
+1  events returned
+Ident:  5
+READ!
+Read event on id:  5
+toWriteMap: 
+map[5:abc
+]
+
+Read:  abc
+ 
+
+KQueue ID:  4
+Event returned..
+1  events returned
+Ident:  5
+WRITE!
+map[5:abc
+]
+Writing to  5 abc
+
+Wrote  4  bytes..
+KQueue ID:  4
+Event returned..
+1  events returned
+Ident:  5
+READ!
+Read event on id:  5
+toWriteMap: 
+map[5:abc
+]
+
+Read:  abc
+ 
+
+KQueue ID:  4
+Event returned..
+1  events returned
+Ident:  5
+WRITE!
+map[5:abc
+]
+Writing to  5 abc
+
+Wrote  4  bytes..
+KQueue ID:  4
+Event returned..
+1  events returned
+Ident:  5
+READ!
+Read event on id:  5
+toWriteMap: 
+map[5:abcde]
+
+Read:  abcde 
+
+KQueue ID:  4
+Event returned..
+2  events returned
+Ident:  5
+READ!
+Read event on id:  5
+toWriteMap: 
+map[5:abcdefghij]
+
+Read:  fghij 
+
+Ident:  5
+WRITE!
+map[5:abcdefghij]
+Writing to  5 abcdefghij
+Wrote  10  bytes..
+KQueue ID:  4
+Event returned..
+1  events returned
+Ident:  5
+READ!
+Read event on id:  5
+toWriteMap: 
+map[5:klmno]
+
+Read:  klmno 
+
+KQueue ID:  4
+Event returned..
+2  events returned
+Ident:  5
+READ!
+Read event on id:  5
+toWriteMap: 
+map[5:klmnopqrst]
+
+Read:  pqrst 
+
+Ident:  5
+WRITE!
+map[5:klmnopqrst]
+Writing to  5 klmnopqrst
+Wrote  10  bytes..
+KQueue ID:  4
+Event returned..
+1  events returned
+Ident:  5
+READ!
+Read event on id:  5
+toWriteMap: 
+map[5:
+]
+
+Read:  
+ 
+
+KQueue ID:  4
+Event returned..
+1  events returned
+Ident:  5
+WRITE!
+map[5:
+]
+Writing to  5 
+
+Wrote  1  bytes..
+KQueue ID:  4
+Event returned..
+1  events returned
+Ident:  5
+READ!
+Read event on id:  5
+toWriteMap: 
+map[5:12345]
+
+Read:  12345 
+
+KQueue ID:  4
+Event returned..
+2  events returned
+Ident:  5
+READ!
+Read event on id:  5
+toWriteMap: 
+map[5:1234567890]
+
+Read:  67890 
+
+Ident:  5
+WRITE!
+map[5:1234567890]
+Writing to  5 1234567890
+Wrote  10  bytes..
+KQueue ID:  4
+Event returned..
+1  events returned
+Ident:  5
+READ!
+Read event on id:  5
+toWriteMap: 
+map[5:
+]
+
+Read:  
+ 
+
+KQueue ID:  4
+Event returned..
+1  events returned
+Ident:  5
+WRITE!
+map[5:
+]
+Writing to  5 
+
+Wrote  1  bytes..
+KQueue ID:  4
+Event returned..
+1  events returned
+Ident:  5
+Disconnection request received! 0
+Connection closed successfully!
