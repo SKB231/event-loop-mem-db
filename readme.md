@@ -1,0 +1,1 @@
+This is a prototype of the redis clone I built in another repo. Mainly using an event loop design with only 1 thread to handle connection - accepts, reads, writes, closes. 
