@@ -52,7 +52,7 @@ func main() {
 	fmt.Println("Hello World!")
 
 	// Define a socket to create an endpoint
-	fd, err := syscall.Socket(syscall.AF_INET, syscall.SOCK_STREAM, 0)
+	socketFD, err := syscall.Socket(syscall.AF_INET, syscall.SOCK_STREAM, 0)
 
 	if err != nil {
 		fmt.Println(err)
@@ -60,9 +60,9 @@ func main() {
 	}
 
 	fmt.Println("Socket created")
-	defer syscall.Close(fd)
+	defer syscall.Close(socketFD)
 
-	err = syscall.Bind(fd, &syscall.SockaddrInet4{
+	err = syscall.Bind(socketFD, &syscall.SockaddrInet4{
 		Port: 8080,
 		Addr: [4]byte{0, 0, 0, 0},
 	})
@@ -74,7 +74,7 @@ func main() {
 
 	fmt.Println("Bound to 0.0.0.0:8080...")
 
-	if err = syscall.Listen(fd, 4); err != nil {
+	if err = syscall.Listen(socketFD, 4); err != nil {
 		fmt.Println(err)
 		return
 	}
@@ -88,11 +88,11 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-
+	fmt.Println("Socket file descriptor: ", socketFD)
 	event := syscall.Kevent_t{
-		Ident:  uint64(fd),                        // fd of the file we want to track
-		Filter: syscall.EVFILT_READ,               // Take the fd as the identifier, and events to watch are in the fflags param
-		Flags:  syscall.EV_ADD | syscall.EV_CLEAR, // Add the event |
+		Ident:  uint64(socketFD),                                      // fd of the file we want to track
+		Filter: syscall.EVFILT_READ,                                   // Take the fd as the identifier, and events to watch are in the fflags param
+		Flags:  syscall.EV_ADD | syscall.EV_CLEAR | syscall.EV_ENABLE, // Add the event |
 		Fflags: 0,
 		Data:   0,
 		Udata:  nil,
@@ -135,23 +135,52 @@ func main() {
 				fmt.Println("Ident: ", ev.Ident)
 				data := ev.Ident
 				_, ok := connectedSockets[data]
-				if !ok {
-					// new socket!
-					connectedSockets[data] = true
+
+				if data == uint64(socketFD) {
+					// A new incoming connection! since event's identifier is the network socket
+
+					nfd, _, err := syscall.Accept(socketFD)
+					if err != nil {
+						fmt.Println("Error accepting connection!")
+						fmt.Println(err)
+						continue
+					}
 					event := syscall.Kevent_t{
-						Ident:  uint64(data),                      // fd of the file we want to track
-						Filter: syscall.EVFILT_READ,               // Take the fd as the identifier, and events to watch are in the fflags param
-						Flags:  syscall.EV_ADD | syscall.EV_CLEAR, // Add the event |
+						Ident:  uint64(nfd),                        // fd of the file we want to track
+						Filter: syscall.EVFILT_READ,                // Take the fd as the identifier, and events to watch are in the fflags param
+						Flags:  syscall.EV_ADD | syscall.EV_ENABLE, // Add the event |
 					}
 					_, err = syscall.Kevent(kqFd, []syscall.Kevent_t{event}, nil, nil)
 					if err != nil {
 						fmt.Println("Error registering new socket! ", err)
 						continue
 					}
-					//syscall.Accept(int(data))
+					connectedSockets[uint64(nfd)] = true
+					// //syscall.Accept(int(data))
 					fmt.Println("New connection - ", data, " added!")
-				} else {
+				} else if ok && ev.Flags&syscall.EV_EOF > 0 {
+					// this is a disconnection request
+					fmt.Println("Disconnection request received!", ev.Fflags)
+					deleteEvent := syscall.Kevent_t{
+						Ident:  uint64(ev.Ident),
+						Flags:  syscall.EV_DELETE,
+						Filter: syscall.EVFILT_READ,
+						//Flags: syscall.EV_ADD,
+					}
+					_, err = syscall.Kevent(kqFd, []syscall.Kevent_t{deleteEvent}, nil, nil)
+					if err != nil {
+						fmt.Println("Error adding deletion of connection from kqueue")
+						fmt.Println(err)
+					} else {
+						delete(connectedSockets, data)
+						syscall.Close(int(ev.Ident))
+						fmt.Println("Connection closed successfully!")
+					}
+				} else if ok {
+					// An existing connection! Must be a read event?
+
 					clear(netBuffer)
+					fmt.Println("Read event on id: ", ev.Ident)
 					readData, err := syscall.Read(int(ev.Ident), netBuffer)
 					if err != nil {
 						fmt.Println("Failed to read event...")
